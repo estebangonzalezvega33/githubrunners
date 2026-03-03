@@ -6,7 +6,7 @@ on:
 jobs:
   check-nodes:
     # Reemplaza 'arc-runner-set' por el nombre exacto de tu Runner Scale Set
-    runs-on: EQUIPO8 
+    runs-on: lab1 
 
     steps:
       - name: Checkout code
