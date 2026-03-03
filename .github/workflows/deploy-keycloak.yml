@@ -1,1 +1,39 @@
 
+name: Deploy Keycloak a Kind
+
+on:
+  workflow_dispatch: # Ejecución manual
+
+jobs:
+  install-keycloak:
+    runs-on: arc-runner-set
+
+    steps:
+      - name: Checkout código
+        uses: actions/checkout@v4
+
+      - name: Instalar Helm
+        run: |
+          curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
+
+      - name: Agregar repositorio Bitnami
+        run: |
+          helm repo add bitnami https://charts.bitnami.com/bitnami
+          helm repo update
+
+      - name: Instalar Keycloak
+        run: |
+          # Instalamos Keycloak en el namespace 'auth'
+          helm upgrade --install keycloak bitnami/keycloak \
+            --namespace auth \
+            --create-namespace \
+            --set auth.adminUser=admin \
+            --set auth.adminPassword=password123 \
+            --set production=false \
+            --set httpRelativePath=/auth/ \
+            --wait
+
+      - name: Verificar Instalación
+|       run: |
+          kubectl get pods -n auth
+          echo "Keycloak instalado correctamente."
