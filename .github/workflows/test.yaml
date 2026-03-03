@@ -35,7 +35,8 @@ jobs:
       - name: Apply Manifest
         run: |
           # Ahora kubectl ya debería estar en el PATH
-          kubectl apply -f pod-hola-mundo.yaml
+          kubectl create namespace mi-aplicacion
+          kubectl apply -f pod-hola-mundo.yaml --namespace mi-aplicacion
           
       - name: Verify
         run: |
