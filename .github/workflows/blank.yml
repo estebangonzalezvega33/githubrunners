@@ -1,5 +1,13 @@
- name: Test ARC Runner
+name: Test ARC Runner
   on: workflow_dispatch
+ Check failure on line 2 in .github/workflows/blank.yml
+
+
+GitHub Actions
+/ .github/workflows/blank.yml
+Invalid workflow file
+
+You have an error in your yaml syntax on line 2
   jobs:
     test:
       runs-on: arc-runner-set
