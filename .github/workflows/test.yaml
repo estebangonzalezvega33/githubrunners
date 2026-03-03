@@ -8,6 +8,16 @@ jobs:
     runs-on: arc-runner-set
 
     steps:
+      - name: Install Kubectl
+        run: |
+          echo "Descargando kubectl..."
+          curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+          chmod +x kubectl
+          # Creamos una carpeta local para el binario y la añadimos al PATH
+          mkdir -p $HOME/.local/bin
+          mv kubectl $HOME/.local/bin/
+          echo "$HOME/.local/bin" >> $GITHUB_PATH
+
       - name: Create Pod Manifest
         run: |
           cat <<EOF > pod-hola-mundo.yaml
@@ -15,7 +25,6 @@ jobs:
           kind: Pod
           metadata:
             name: hola-mundo-kind
-            namespace: default
           spec:
             containers:
             - name: hello
@@ -25,11 +34,10 @@ jobs:
 
       - name: Apply Manifest
         run: |
+          # Ahora kubectl ya debería estar en el PATH
           kubectl apply -f pod-hola-mundo.yaml
-
-      - name: Wait and Verify
+          
+      - name: Verify
         run: |
-          # Esperamos unos segundos para que se cree
-          sleep 5
           kubectl get pod hola-mundo-kind
           kubectl logs hola-mundo-kind
