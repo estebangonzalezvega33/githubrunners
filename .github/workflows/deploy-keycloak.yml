@@ -1,14 +1,18 @@
-name: Deploy Keycloak a Kind
+name: Hola Mundo Pipeline
 
+# Este pipeline se ejecuta cada vez que hay un push a cualquier rama
 on:
-  workflow_dispatch: # Ejecución manual
+  push:
+    branches:
+      - '**'
 
 jobs:
-  install-keycloak:
-    runs-on: arc-runner-set
+  hola-mundo:
+    runs-on: ubuntu-latest
 
     steps:
       - name: Checkout código
         uses: actions/checkout@v4
 
-     
+      - name: Saludar
+        run: echo "Hola Mundo"
