@@ -11,8 +11,15 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-
+      - name: Install kubectl
+        run: |
+          curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+          chmod +x kubectl
+          sudo mv kubectl /usr/local/bin/
       - name: Check Kubernetes Nodes
         run: |
           echo "Consultando los nodos del clúster..."
           kubectl get nodes -o wide
+      - name: Check Kubernetes Ns
+        run: |
+          kubectl get ns
