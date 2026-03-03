@@ -33,3 +33,26 @@ jobs:
           # 1. Agregar el repositorio de Codecentric
           helm repo add codecentric https://codecentric.github.io/helm-charts
           helm repo update
+      - name: Create Pod Manifest
+        run: |
+          cat <<EOF > pod-hola-mundo.yaml
+          apiVersion: v1
+          kind: Pod
+          metadata:
+            name: hola-mundo-kind
+          spec:
+            containers:
+            - name: hello
+              image: busybox:1.36
+              command: ['sh', '-c', 'echo "¡Hola desde el clúster Kind!" && sleep 3600']
+          EOF
+
+      - name: Apply Manifest
+        run: |
+          # Ahora kubectl ya debería estar en el PATH
+          kubectl apply -f pod-hola-mundo.yaml
+          
+      - name: Verify
+        run: |
+          kubectl get pod hola-mundo-kind
+          kubectl logs hola-mundo-kind
