@@ -20,6 +20,8 @@ jobs:
         run: |
           echo "Consultando los nodos del clúster..."
           kubectl get nodes -o wide
-      - name: Check Kubernetes Ns
+      - name: Deploy Keycloak via Helm
         run: |
-          kubectl get ns
+          # 1. Agregar el repositorio de Codecentric
+          helm repo add codecentric https://codecentric.github.io/helm-charts
+          helm repo update
