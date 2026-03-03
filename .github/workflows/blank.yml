@@ -1,1 +1,24 @@
+name: Test ARC en Kind
 
+on:
+  workflow_dispatch: # Permite lanzarlo manualmente con el botón "Run workflow"
+
+jobs:
+  job-en-kind:
+    # Este nombre DEBE coincidir con el nombre de tu Scale Set
+    runs-on: arc-runner-set
+
+    steps:
+      - name: Checkout código
+        uses: actions/checkout@v4
+
+      - name: Saludando desde el pod
+        run: |
+          echo "¡Conexión exitosa!"
+          echo "Estoy corriendo en el pod: $(hostname)"
+          echo "Dentro del namespace: $(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace)"
+
+      - name: Info del Sistema
+        run: |
+          uptime
+          free -m
