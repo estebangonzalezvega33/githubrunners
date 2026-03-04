@@ -1,7 +1,11 @@
 cloakname: Deploy keycloak on 
 
-on: 
-  workflow_dispatch:
+on:
+  push:
+    branches:
+      - main   # puedes cambiarlo por la rama que uses
+#on: 
+  #workflow_dispatch:
 
 jobs:
   keycloack setup  for deploy:
