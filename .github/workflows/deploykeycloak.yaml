@@ -56,10 +56,10 @@ jobs:
             echo "Namespace 'keycloak' ya existe."
           fi
       - name: Deploy Keycloak
-        run: ls -la
+        
         run: |
            set -e
-              
+           ls -la   
            echo "Verificando namespace..."
            kubectl get namespace keycloak || kubectl create namespace keycloak
 
