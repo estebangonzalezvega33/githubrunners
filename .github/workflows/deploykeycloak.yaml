@@ -21,3 +21,24 @@ jobs:
           mkdir -p $HOME/.local/bin
           mv kubectl $HOME/.local/bin/
           echo "$HOME/.local/bin" >> $GITHUB_PATH
+
+      # 3️⃣ Instalar Helm manualmente
+      - name: Install Helm
+        run: |
+          echo "Descargando Helm..."
+          # Obtener la última versión estable
+          HELM_VERSION=$(curl -s https://api.github.com/repos/helm/helm/releases/latest | grep tag_name | cut -d '"' -f 4)
+          # Descargar tar.gz de Helm para Linux amd64
+          curl -Lo helm.tar.gz https://get.helm.sh/helm-${HELM_VERSION}-linux-amd64.tar.gz
+            
+          # Extraer el binario
+          tar -zxvf helm.tar.gz
+          chmod +x linux-amd64/helm
+
+          # Mover al PATH local
+          mkdir -p $HOME/.local/bin
+          mv linux-amd64/helm $HOME/.local/bin/
+          echo "$HOME/.local/bin" >> $GITHUB_PATH
+
+          # Verificar instalación
+          helm version    
