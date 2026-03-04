@@ -1,77 +1,83 @@
-name: Deploys keycloak on kind 
+name: Deploy Keycloak on KIND (Lab)
 
 on:
   push:
     branches:
-      - main   # puedes cambiarlo por la rama que uses
-#on: 
-  #workflow_dispatch:
+      - main
 
 jobs:
-  keycloack-setup-for-deploy:
+  deploy-keycloak:
     runs-on: arc-runner-set
 
     steps:
+
+      # 1️⃣ Checkout repo
       - name: Checkout repository
         uses: actions/checkout@v4
-      - name: Install Kubectl
+
+      # 2️⃣ Install kubectl
+      - name: Install kubectl
         run: |
-          echo "Descargando kubectl..."
+          set -e
           curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
           chmod +x kubectl
-          # Creamos una carpeta local para el binario y la añadimos al PATH
           mkdir -p $HOME/.local/bin
           mv kubectl $HOME/.local/bin/
           echo "$HOME/.local/bin" >> $GITHUB_PATH
 
-      # 3️⃣ Instalar Helm manualmente
+      # 3️⃣ Install Helm
       - name: Install Helm
         run: |
-          echo "Descargando Helm..."
-          # Obtener la última versión estable
-          HELM_VERSION=$(curl -s https://api.github.com/repos/helm/helm/releases/latest | grep tag_name | cut -d '"' -f 4)
-          # Descargar tar.gz de Helm para Linux amd64
-          curl -Lo helm.tar.gz https://get.helm.sh/helm-${HELM_VERSION}-linux-amd64.tar.gz
-            
-          # Extraer el binario
-          tar -zxvf helm.tar.gz
-          chmod +x linux-amd64/helm
+          set -e
+          curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
 
-          # Mover al PATH local
-          mkdir -p $HOME/.local/bin
-          mv linux-amd64/helm $HOME/.local/bin/
-          echo "$HOME/.local/bin" >> $GITHUB_PATH
-
-          # Verificar instalación
-          helm version
-      # 4️⃣ Verificar cluster y crear namespace
-      - name: Check cluster status and create namespace
+      # 4️⃣ Verificar acceso al cluster
+      - name: Verify cluster access
         run: |
-          echo "Verificando el estado del cluster..."
-          kubectl cluster-info || (echo "Cluster no disponible" && exit 1)
-          if ! kubectl get namespace keycloak; then
-            echo "Namespace 'keycloak' no existe. Creando..."
-            kubectl create namespace keycloak
-          else
-            echo "Namespace 'keycloak' ya existe."
+          set -e
+          kubectl cluster-info
+          kubectl get nodes
+
+      # 5️⃣ Limpieza completa del namespace (modo laboratorio)
+      - name: Clean previous deployment
+        run: |
+          set -e
+
+          if kubectl get namespace keycloak > /dev/null 2>&1; then
+            echo "Eliminando namespace keycloak..."
+            kubectl delete namespace keycloak
+            kubectl wait --for=delete namespace/keycloak --timeout=180s
           fi
+
+          echo "Creando namespace limpio..."
+          kubectl create namespace keycloak
+
+      # 6️⃣ Deploy Keycloak
       - name: Deploy Keycloak
-        
         run: |
-           set -e
-           ls -la   
-           echo "Verificando namespace..."
-           kubectl get namespace keycloak || kubectl create namespace keycloak
+          set -e
 
-           echo "Agregando repo Helm codecentric..."
-           helm repo add codecentric https://codecentric.github.io/helm-charts
+          helm repo add codecentric https://codecentric.github.io/helm-charts
+          helm repo update
 
-           echo "Actualizando repos..."
-           helm repo update
+          helm upgrade --install keycloak codecentric/keycloakx \
+            --namespace keycloak \
+            -f values.yaml \
+            --wait \
+            --timeout 15m
 
-           echo "Instalando / actualizando Keycloak..."
-           helm upgrade --install keycloak codecentric/keycloakx \
-           --namespace keycloak \
-           -f  values.yaml \
-           --wait \
-           --timeout 5m
+      # 7️⃣ Debug automático si falla
+      - name: Debug if failure
+        if: failure()
+        run: |
+          echo "===== PODS ====="
+          kubectl get pods -n keycloak -o wide
+
+          echo "===== DESCRIBE ====="
+          kubectl describe pods -n keycloak
+
+          echo "===== LOGS ====="
+          for pod in $(kubectl get pods -n keycloak -o jsonpath='{.items[*].metadata.name}'); do
+            echo "Logs for $pod"
+            kubectl logs -n keycloak $pod || true
+          done
