@@ -71,6 +71,6 @@ jobs:
            echo "Instalando / actualizando Keycloak..."
            helm upgrade --install keycloak codecentric/keycloakx \
            --namespace keycloak \
-           -f  /values.yaml \
+           -f  githubrunners/values.yaml \
            --wait \
            --timeout 5m
