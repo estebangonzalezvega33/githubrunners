@@ -8,7 +8,7 @@ on:
   #workflow_dispatch:
 
 jobs:
-  keycloack setup  for deploy:
+  keycloack-setup-for-deploy:
     runs-on: arc-runner-set
 
     steps:
