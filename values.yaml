@@ -1,5 +1,11 @@
 replicaCount: 1
 
+persistence:
+  enabled: true
+  size: 2Gi
+  accessModes:
+    - ReadWriteOnce
+
 extraEnv:
   - name: KEYCLOAK_ADMIN
     value: admin
@@ -9,11 +15,3 @@ extraEnv:
     value: edge
   - name: KC_HOSTNAME_STRICT
     value: "false"
-
-statefulset:
-  persistence:
-    enabled: true
-    storageClass: ""
-    accessModes:
-      - ReadWriteOnce
-    size: 2Gi
