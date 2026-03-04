@@ -41,4 +41,15 @@ jobs:
           echo "$HOME/.local/bin" >> $GITHUB_PATH
 
           # Verificar instalación
-          helm version    
+          helm version
+      # 4️⃣ Verificar cluster y crear namespace
+      - name: Check cluster status and create namespace
+        run: |
+          echo "Verificando el estado del cluster..."
+          kubectl cluster-info || (echo "Cluster no disponible" && exit 1)
+          if ! kubectl get namespace keycloak; then
+            echo "Namespace 'keycloak' no existe. Creando..."
+            kubectl create namespace keycloak
+          else
+            echo "Namespace 'keycloak' ya existe."
+          fi
