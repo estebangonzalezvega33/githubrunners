@@ -1,20 +1,19 @@
-command:
-  - "/opt/keycloak/bin/kc.sh"
-  - "start"
-  - "--http-port=8080"
-  - "--hostname-strict=false"
-extraEnv: |
+replicaCount: 1
+
+extraEnv:
   - name: KEYCLOAK_ADMIN
     value: admin
   - name: KEYCLOAK_ADMIN_PASSWORD
     value: admin
-  - name: JAVA_OPTS_APPEND
-    value: >-
-      -Djgroups.dns.query={{ include "keycloak.fullname" . }}-headless
+  - name: KC_PROXY
+    value: edge
+  - name: KC_HOSTNAME_STRICT
+    value: "false"
+
 statefulset:
   persistence:
     enabled: true
     storageClass: ""
     accessModes:
       - ReadWriteOnce
-    size: 2Gi2Gi
+    size: 2Gi
