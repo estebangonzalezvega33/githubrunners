@@ -1,3 +1,5 @@
+name: Deploy keycloak on kind 
+
 on:
   push:
     branches:
@@ -51,11 +53,21 @@ jobs:
           else
             echo "Namespace 'keycloak' ya existe."
           fi
-      - name: Install or Upgrade Keycloak
+      - name: Deploy Keycloak
         run: |
-          kubectl get namespace keycloak || kubectl create namespace keycloak
+           set -e
 
-          helm repo update
+           echo "Verificando namespace..."
+           kubectl get namespace keycloak || kubectl create namespace keycloak
 
-          helm upgrade --install keycloak codecentric/keycloakx \
-            --namespace keycloak
+           echo "Agregando repo Helm codecentric..."
+           helm repo add codecentric https://codecentric.github.io/helm-charts
+
+           echo "Actualizando repos..."
+           helm repo update
+
+           echo "Instalando / actualizando Keycloak..."
+           helm upgrade --install keycloak codecentric/keycloakx \
+           --namespace keycloak \
+           --wait \
+           --timeout 5m
