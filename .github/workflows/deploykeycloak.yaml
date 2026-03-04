@@ -12,6 +12,8 @@ jobs:
     runs-on: arc-runner-set
 
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
       - name: Install Kubectl
         run: |
           echo "Descargando kubectl..."
@@ -69,6 +71,6 @@ jobs:
            echo "Instalando / actualizando Keycloak..."
            helm upgrade --install keycloak codecentric/keycloakx \
            --namespace keycloak \
-           --values /values.yaml \
+           -f  /values.yaml \
            --wait \
            --timeout 5m
