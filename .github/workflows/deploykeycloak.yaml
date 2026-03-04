@@ -1,10 +1,10 @@
-name: Deploy keycloak on 
+cloakname: Deploy keycloak on 
 
 on: 
   workflow_dispatch:
 
 jobs:
-  kind-deploy:
+  keycloack setup  for deploy:
     runs-on: arc-runner-set
 
     steps:
