@@ -1,1 +1,19 @@
+name: Deploy keycloak on 
 
+on: 
+  workflow_dispatch:
+
+jobs:
+  kind-deploy:
+    runs-on: arc-runner-set
+
+    steps:
+      - name: Install Kubectl
+        run: |
+          echo "Descargando kubectl..."
+          curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+          chmod +x kubectl
+          # Creamos una carpeta local para el binario y la añadimos al PATH
+          mkdir -p $HOME/.local/bin
+          mv kubectl $HOME/.local/bin/
+          echo "$HOME/.local/bin" >> $GITHUB_PATH
