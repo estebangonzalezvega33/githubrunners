@@ -1,4 +1,4 @@
-cloakname: Deploy keycloak on 
+name: Deploy keycloak on kind 
 
 on:
   push:
