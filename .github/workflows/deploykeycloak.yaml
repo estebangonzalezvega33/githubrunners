@@ -62,7 +62,7 @@ jobs:
 
           helm upgrade --install keycloak codecentric/keycloakx \
             --namespace keycloak \
-            -f values.yaml \
+            -f h2.values.yaml \
             --wait \
             --timeout 15m
 
